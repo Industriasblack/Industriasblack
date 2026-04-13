@@ -1,165 +1,792 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Industrias Black: Innovación y Seguridad</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InnovaPrint</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Roboto', sans-serif;
+    :root {
+      --bg:#f1f5f9; --white:#ffffff; --dark:#0f172a; --dark-2:#020617;
+      --blue:#2563eb; --blue-dark:#1d4ed8; --blue-soft:#38bdf8;
+      --text:#334155; --muted:#64748b;
+      --shadow:0 20px 50px rgba(0,0,0,0.15); --radius:18px;
     }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+    html { scroll-behavior:smooth; }
+    body { background:var(--bg); color:var(--dark); }
+    img { max-width:100%; display:block; }
+    a { text-decoration:none; }
+    ul { list-style:none; }
 
-    body {
-      background-color: #ffffff;
-      color: #000000;
+    /* ===== TRUCO CSS: checkbox oculto controla qué se ve ===== */
+    #gate { display:none; }
+
+    /* Por defecto: registro visible, portal oculto */
+    #registro { display:flex; }
+    #portal    { display:none; }
+
+    /* Cuando el checkbox está marcado: portal visible, registro oculto */
+    #gate:checked ~ #registro { display:none; }
+    #gate:checked ~ #portal   { display:block; }
+
+    /* ===== REGISTRO ===== */
+    #registro {
+      position:fixed; width:100%; height:100vh;
+      background:linear-gradient(135deg,#0f172a,#1e293b);
+      justify-content:center; align-items:center; z-index:9999;
     }
+    .registro-card {
+      background:var(--white); padding:40px; border-radius:20px;
+      width:320px; text-align:center; box-shadow:0 30px 80px rgba(0,0,0,.45);
+    }
+    .logo-registro-svg {
+      width:100px; height:100px; margin:0 auto 15px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg,#2563eb,#0f172a);
+      font-size:32px; font-weight:900; color:#fff; letter-spacing:-2px;
+    }
+    .registro-card h2 { margin-bottom:20px; font-weight:700; font-size:22px; }
+    .registro-card input {
+      width:100%; padding:12px; margin:8px 0;
+      border-radius:10px; border:1px solid #cbd5e1; outline:none;
+      font-family:'Poppins',sans-serif; font-size:15px;
+    }
+    #btn-registrar {
+      width:100%; padding:13px; margin-top:15px; border:none;
+      border-radius:12px; background:var(--blue); color:var(--white);
+      font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif;
+      font-size:15px; letter-spacing:1px; transition:.3s;
+    }
+    #btn-registrar:hover { background:var(--blue-dark); transform:translateY(-2px); }
 
+    /* ===== HEADER ===== */
     header {
-      background-color: #1d1d1d;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 15px 40px;
+      position:sticky; top:0;
+      background:rgba(15,23,42,0.95); backdrop-filter:blur(10px);
+      color:var(--white); padding:18px 60px;
+      display:flex; justify-content:space-between; align-items:center; gap:20px;
+      box-shadow:0 5px 20px rgba(0,0,0,0.25); z-index:1000;
+    }
+    .brand { font-size:28px; font-weight:900; letter-spacing:-1px; }
+    nav { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+
+    /* Menú cascada */
+    .nav-wrapper { position:relative; }
+    .nav-toggle {
+      color:var(--white); font-weight:700; font-size:15px;
+      background:var(--blue); padding:9px 22px; border-radius:50px;
+      cursor:pointer; border:none; font-family:'Poppins',sans-serif;
+      display:flex; align-items:center; gap:6px; transition:.3s;
+    }
+    .nav-toggle::after { content:"▾"; font-size:12px; }
+    .nav-toggle:hover { background:var(--blue-dark); }
+    .nav-dropdown {
+      position:absolute; top:calc(100% + 10px); left:0;
+      background:rgba(15,23,42,0.98); border-radius:14px;
+      padding:10px 0; min-width:180px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.4);
+      opacity:0; pointer-events:none; transform:translateY(-10px);
+      transition:opacity .25s, transform .25s; z-index:999;
+    }
+    .nav-wrapper:hover .nav-dropdown,
+    .nav-wrapper:focus-within .nav-dropdown {
+      opacity:1; pointer-events:all; transform:translateY(0);
+    }
+    .nav-dropdown a {
+      display:block; padding:10px 22px;
+      color:#e2e8f0; font-weight:600; font-size:14px;
+      transition:.2s; border-left:3px solid transparent;
+    }
+    .nav-dropdown a:hover {
+      color:var(--blue-soft); background:rgba(255,255,255,0.05);
+      border-left-color:var(--blue-soft);
+    }
+    #nav-carrito-btn {
+      display:none; align-items:center; gap:8px;
+      background:var(--blue); color:var(--white) !important;
+      padding:8px 18px; border-radius:50px;
+      font-weight:700; font-size:14px; font-family:'Poppins',sans-serif;
+      cursor:pointer; border:none; transition:.3s; position:relative;
+    }
+    #nav-carrito-btn:hover { background:var(--blue-dark); transform:translateY(-2px); }
+    .carrito-badge {
+      background:#ef4444; color:#fff; font-size:11px; font-weight:900;
+      width:20px; height:20px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      position:absolute; top:-8px; right:-8px;
+    }
+    .btn-salir {
+      color:#94a3b8; font-weight:600; font-size:14px;
+      background:none; border:none; cursor:pointer;
+      font-family:'Poppins',sans-serif; transition:.2s; padding:8px 12px;
+    }
+    .btn-salir:hover { color:#ef4444; }
+
+    /* ===== HERO ===== */
+    .hero, .page-hero, .contact {
+      background:linear-gradient(120deg,#2563eb,#1e40af,#0f172a);
+      background-size:300% 300%; animation:fondo 10s ease infinite;
+      color:var(--white); text-align:center; padding:90px 20px;
+    }
+    .hero {
+      min-height:90vh; display:flex; flex-direction:column;
+      justify-content:center; align-items:center;
+    }
+    .hero-logo {
+      width:180px; height:180px; object-fit:cover; border-radius:20px;
+      margin:0 auto 28px; box-shadow:0 8px 30px rgba(0,0,0,0.4);
+    }
+    .hero-slogan {
+      font-size:30px; font-weight:900; letter-spacing:.5px;
+      opacity:.95; max-width:600px; margin:0 auto;
+      text-shadow:0 4px 15px rgba(0,0,0,0.3);
+    }
+    .page-hero h1, .contact h1 {
+      font-size:56px; margin-bottom:15px; font-weight:900;
+      text-shadow:0 8px 25px rgba(0,0,0,.35);
+    }
+    .hero p, .page-hero p, .contact .sub {
+      max-width:760px; margin:0 auto; font-size:18px; opacity:.95;
+    }
+    @keyframes fondo {
+      0%   { background-position:0% 50%; }
+      50%  { background-position:100% 50%; }
+      100% { background-position:0% 50%; }
     }
 
-    header nav a {
-      color: white;
-      margin-left: 20px;
-      text-decoration: none;
-      font-weight: bold;
+    /* ===== SECCIONES ===== */
+    .section-title { text-align:center; font-size:38px; font-weight:900; margin-bottom:15px; color:var(--dark); }
+    .moving-section {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:80px 60px; gap:40px; background:var(--white); flex-wrap:wrap;
     }
+    .moving-left, .moving-right { flex:1; min-width:320px; }
+    .moving-left { overflow:hidden; border-radius:20px; background:var(--dark); padding:30px; }
+    .moving-wrapper { height:60px; overflow:hidden; position:relative; }
+    .moving-text {
+      display:inline-flex; gap:60px; white-space:nowrap;
+      font-size:26px; font-weight:700; color:var(--blue-soft);
+      animation:mover 18s linear infinite;
+    }
+    .moving-text:hover { animation-play-state:paused; }
+    @keyframes mover {
+      0%   { transform:translateX(0); }
+      100% { transform:translateX(-50%); }
+    }
+    .moving-right h2 { font-size:34px; font-weight:900; margin-bottom:20px; color:var(--dark); }
+    .moving-right p  { font-size:17px; margin-bottom:20px; color:var(--text); }
+    .moving-right li { margin-bottom:10px; font-size:16px; color:#1e293b; font-weight:600; }
 
-    header .contact-button {
-      background-color: red;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 25px;
-      text-decoration: none;
-      font-weight: bold;
+    .services { padding:80px 20px; }
+    .cards {
+      max-width:1150px; margin:40px auto 0;
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:30px;
     }
+    .card {
+      background:var(--white); padding:30px; border-radius:16px;
+      text-align:center; box-shadow:var(--shadow); transition:.3s;
+    }
+    .card:hover { transform:translateY(-10px) scale(1.02); }
+    .icon { font-size:40px; margin-bottom:15px; }
+    .card h3 { margin-bottom:10px; font-weight:700; font-size:18px; }
+    .card p { font-size:14px; color:#666; line-height:1.7; }
 
-    main {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 60px 40px;
+    /* ===== CATÁLOGO ===== */
+    .catalogo-section { padding:80px 20px; text-align:center; }
+    .catalogo-section h1 { font-size:48px; font-weight:900; color:var(--dark); }
+    .catalogo-section p  { margin-top:10px; color:#475569; font-size:16px; }
+    .catalogo {
+      max-width:1200px; margin:50px auto 0;
+      display:grid; grid-template-columns:repeat(3,1fr); gap:30px;
     }
+    .producto {
+      background:var(--white); padding:20px;
+      border-radius:var(--radius); box-shadow:var(--shadow); transition:.3s;
+      position:relative; overflow:hidden;
+    }
+    .producto:hover { transform:translateY(-10px) scale(1.03); }
+    .producto img { width:100%; height:220px; object-fit:cover; border-radius:12px; }
+    .nombre { margin-top:15px; font-size:18px; color:var(--dark); font-weight:700; }
+    .precio { margin-top:8px; color:var(--blue); font-weight:700; font-size:17px; }
+    .btn {
+      display:inline-block; margin-top:12px; padding:12px 18px;
+      border:none; border-radius:10px; background:var(--blue);
+      color:var(--white); cursor:pointer; transition:.3s; font-weight:700;
+      font-family:'Poppins',sans-serif; font-size:14px;
+    }
+    .btn:hover { background:var(--blue-dark); }
+    .color-tip {
+      position:absolute; top:12px; right:12px;
+      background:rgba(15,23,42,0.85); color:#fff;
+      font-size:11px; font-weight:600; padding:5px 10px; border-radius:20px;
+      opacity:0; transition:.3s; pointer-events:none; backdrop-filter:blur(4px);
+    }
+    .producto:hover .color-tip { opacity:1; }
 
-    .text-content {
-      max-width: 50%;
+    /* ===== ABOUT ===== */
+    .about-content {
+      display:flex; gap:40px; padding:80px 60px;
+      flex-wrap:wrap; justify-content:center; align-items:flex-start;
     }
+    .about-text { max-width:520px; }
+    .about-text h2 { margin-bottom:20px; font-size:34px; font-weight:900; }
+    .about-text p  { margin-bottom:15px; line-height:1.9; color:var(--text); font-size:15px; }
+    .about-box {
+      background:var(--white); padding:35px;
+      border-radius:var(--radius); width:320px; box-shadow:var(--shadow);
+    }
+    .about-box h3 { margin-bottom:15px; font-weight:700; font-size:20px; }
+    .about-box li { margin-bottom:12px; color:var(--text); font-weight:600; font-size:15px; }
+    .mission { padding:0 20px 80px; display:flex; justify-content:center; gap:30px; flex-wrap:wrap; }
+    .mission .card h3 { font-size:20px; font-weight:900; }
 
-    .text-content h1 {
-      font-size: 48px;
-      margin-bottom: 20px;
+    /* ===== CONTACTO ===== */
+    .contact { padding:90px 20px; }
+    .sub { margin-bottom:50px !important; }
+    .container { display:flex; justify-content:center; gap:40px; flex-wrap:wrap; margin-top:40px; }
+    .info {
+      background:rgba(255,255,255,0.1); backdrop-filter:blur(12px);
+      padding:35px; border-radius:var(--radius); width:320px;
+      text-align:left; box-shadow:0 20px 50px rgba(0,0,0,0.3); color:#fff;
     }
-
-    .text-content h2 {
-      font-size: 18px;
-      color: #333;
-      margin-bottom: 20px;
+    .info h3 { margin-bottom:20px; font-weight:700; font-size:20px; }
+    .info p  { margin-bottom:12px; line-height:1.6; color:#fff; font-size:15px; }
+    .social { margin-top:20px; }
+    .social span { display:block; margin-bottom:10px; font-weight:700; }
+    .social a { display:block; color:var(--blue-soft); margin-top:6px; font-weight:700; }
+    .form {
+      background:var(--white); color:#000; padding:35px;
+      border-radius:var(--radius); width:340px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.3); text-align:left;
     }
-
-    .text-content p {
-      font-size: 16px;
-      color: #555;
-      margin-bottom: 30px;
+    .form h3 { margin-bottom:20px; font-weight:700; font-size:20px; }
+    .form input, .form textarea {
+      width:100%; padding:12px; margin-bottom:12px;
+      border-radius:10px; border:1px solid #cbd5e1; outline:none;
+      font-family:'Poppins',sans-serif;
     }
-
-    .buttons a {
-      padding: 12px 24px;
-      text-decoration: none;
-      font-weight: bold;
-      border-radius: 5px;
-      margin-right: 10px;
+    .form textarea { height:120px; resize:none; }
+    .form button {
+      width:100%; padding:14px; border:none; border-radius:12px;
+      background:var(--blue); color:var(--white);
+      font-weight:700; cursor:pointer; transition:.3s;
+      font-family:'Poppins',sans-serif; font-size:14px; letter-spacing:1px;
     }
-
-    .buttons .info {
-      background-color: red;
-      color: white;
-    }
-
-    .buttons .contact {
-      background-color: white;
-      border: 1px solid #ccc;
-      color: #333;
-    }
-
-    .image-content img {
-      max-width: 500px;
-      border-radius: 15px;
-    }
+    .form button:hover { background:var(--blue-dark); transform:translateY(-3px); }
 
     footer {
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-      background-color: #f9f9f9;
+      background:var(--dark-2); color:var(--white);
+      text-align:center; padding:32px 20px; font-size:15px; font-weight:600;
     }
 
-    .social-icons img {
-      width: 30px;
-      margin: 0 10px;
+    /* ===== OVERLAY ===== */
+    .overlay-fondo {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.5); backdrop-filter:blur(5px);
+      z-index:5000; animation:fadeIn .2s ease;
     }
+    .overlay-fondo.activo { display:block; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 
-    .chatbot-container {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 350px;
-      height: 500px;
-      border: none;
-      z-index: 1000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      border-radius: 20px;
-      overflow: hidden;
+    /* ===== MODAL ===== */
+    .modal-confirmar {
+      display:none; position:fixed; inset:0;
+      z-index:6000; justify-content:center; align-items:center;
+    }
+    .modal-confirmar.activo { display:flex; }
+    .modal-card {
+      background:var(--white); border-radius:24px; width:340px; max-width:92vw;
+      box-shadow:0 40px 100px rgba(0,0,0,0.35); overflow:hidden;
+      animation:slideUp .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes slideUp {
+      from { transform:translateY(40px) scale(.95); opacity:0; }
+      to   { transform:translateY(0) scale(1); opacity:1; }
+    }
+    .modal-img-wrap { width:100%; height:200px; overflow:hidden; position:relative; }
+    .modal-img-wrap img { width:100%; height:100%; object-fit:cover; }
+    .modal-img-wrap::after {
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,.4),transparent);
+    }
+    .modal-body { padding:24px; }
+    .modal-body h3 { font-size:20px; font-weight:800; margin-bottom:4px; }
+    .modal-body .m-precio { color:var(--blue); font-weight:700; font-size:17px; margin-bottom:14px; }
+    .modal-body p { color:var(--text); font-size:14px; margin-bottom:22px; line-height:1.6; }
+    .modal-acciones { display:flex; gap:10px; }
+    .modal-acciones button {
+      flex:1; padding:13px; border:none; border-radius:14px;
+      font-weight:700; font-size:14px; cursor:pointer; transition:.25s;
+      font-family:'Poppins',sans-serif;
+    }
+    .btn-confirmar { background:var(--blue); color:#fff; }
+    .btn-confirmar:hover { background:var(--blue-dark); transform:translateY(-2px); }
+    .btn-cancelar { background:#f1f5f9; color:var(--dark); }
+    .btn-cancelar:hover { background:#e2e8f0; }
+
+    /* ===== CARRITO PANEL ===== */
+    .carrito-panel {
+      display:none; position:fixed; top:50%; left:50%;
+      transform:translate(-50%,-50%) scale(.9);
+      width:420px; max-width:95vw; max-height:85vh;
+      background:var(--white); border-radius:28px;
+      box-shadow:0 40px 100px rgba(0,0,0,0.35);
+      z-index:6000; flex-direction:column; overflow:hidden;
+      opacity:0; transition:transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+    }
+    .carrito-panel.abierto {
+      display:flex; transform:translate(-50%,-50%) scale(1); opacity:1;
+      animation:cartPop .35s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+    @keyframes cartPop {
+      from { transform:translate(-50%,-50%) scale(.88); opacity:0; }
+      to   { transform:translate(-50%,-50%) scale(1); opacity:1; }
+    }
+    .carrito-head {
+      padding:22px 24px 18px; display:flex; align-items:center;
+      justify-content:space-between; border-bottom:1px solid #f1f5f9;
+    }
+    .carrito-head-left { display:flex; align-items:center; gap:10px; }
+    .carrito-head-left h2 { font-size:20px; font-weight:800; }
+    .carrito-head-left .items-count {
+      background:var(--blue); color:#fff;
+      font-size:12px; font-weight:700; padding:2px 8px; border-radius:50px;
+    }
+    .btn-cerrar-carrito {
+      width:34px; height:34px; border-radius:50%; border:none;
+      background:#f1f5f9; cursor:pointer; font-size:16px; color:var(--muted);
+      display:flex; align-items:center; justify-content:center; transition:.2s; flex-shrink:0;
+    }
+    .btn-cerrar-carrito:hover { background:#e2e8f0; color:var(--dark); transform:scale(1.1); }
+    .carrito-lista { flex:1; overflow-y:auto; padding:16px 24px; }
+    .carrito-lista::-webkit-scrollbar { width:4px; }
+    .carrito-lista::-webkit-scrollbar-thumb { background:#e2e8f0; border-radius:4px; }
+    .carrito-vacio { text-align:center; padding:50px 20px; color:var(--muted); }
+    .carrito-vacio .v-icon { font-size:52px; margin-bottom:12px; }
+    .carrito-vacio p { font-size:15px; }
+    .ci { display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid #f8fafc; }
+    .ci:last-child { border-bottom:none; }
+    .ci img { width:60px; height:60px; border-radius:12px; object-fit:cover; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+    .ci-data { flex:1; min-width:0; }
+    .ci-data .ci-nom { font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ci-data .ci-sub { color:var(--muted); font-size:12px; margin-top:2px; }
+    .ci-data .ci-sub span { color:var(--blue); font-weight:700; }
+    .ci-controles { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+    .c-btn {
+      width:28px; height:28px; border-radius:8px; border:1px solid #e2e8f0;
+      background:#fff; font-size:14px; font-weight:700; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; color:var(--dark); transition:.2s;
+    }
+    .c-btn:hover { background:var(--blue); color:#fff; border-color:var(--blue); }
+    .c-cant { font-size:14px; font-weight:700; min-width:18px; text-align:center; }
+    .c-del { background:none; border:none; cursor:pointer; font-size:16px; color:#cbd5e1; transition:.2s; margin-left:4px; }
+    .c-del:hover { color:#ef4444; transform:scale(1.2); }
+    .carrito-pie { padding:18px 24px 22px; border-top:1px solid #f1f5f9; background:#fafafa; }
+    .total-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+    .total-row .total-label { font-size:15px; color:var(--muted); font-weight:600; }
+    .total-row .total-num { font-size:22px; font-weight:900; color:var(--dark); }
+    .total-row .total-num span { color:var(--blue); }
+    .btn-pedido {
+      width:100%; padding:15px; border:none; border-radius:16px;
+      background:linear-gradient(135deg,var(--blue),#1e40af);
+      color:#fff; font-size:15px; font-weight:700; cursor:pointer; transition:.3s;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      box-shadow:0 8px 24px rgba(37,99,235,0.35); font-family:'Poppins',sans-serif;
+    }
+    .btn-pedido:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(37,99,235,0.45); }
+    .btn-vaciar {
+      width:100%; padding:10px; border:none; background:none;
+      color:#cbd5e1; font-size:12px; cursor:pointer; margin-top:8px;
+      transition:.2s; border-radius:10px; font-family:'Poppins',sans-serif;
+    }
+    .btn-vaciar:hover { color:#ef4444; background:#fff5f5; }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position:fixed; bottom:28px; left:50%;
+      transform:translateX(-50%) translateY(60px);
+      background:var(--dark); color:#fff; padding:12px 22px;
+      border-radius:50px; font-size:13px; font-weight:600; z-index:9000;
+      transition:transform .4s cubic-bezier(.4,0,.2,1);
+      white-space:nowrap; pointer-events:none; box-shadow:0 8px 24px rgba(0,0,0,0.25);
+    }
+    .toast.visible { transform:translateX(-50%) translateY(0); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width:992px) {
+      header { padding:18px 24px; }
+      .page-hero h1,.contact h1 { font-size:42px; }
+      .catalogo { grid-template-columns:repeat(2,1fr); }
+      .moving-section,.about-content { padding:60px 24px; }
+    }
+    @media (max-width:768px) {
+      header { flex-direction:column; align-items:flex-start; gap:12px; }
+      nav { gap:10px; }
+      .hero,.page-hero,.contact,.catalogo-section { padding:70px 20px; }
+      .page-hero h1,.catalogo-section h1,.contact h1 { font-size:34px; }
+      .hero-slogan { font-size:22px; }
+      .hero-logo { width:140px; height:140px; }
+      .moving-text { font-size:20px; gap:30px; }
+      .moving-right h2 { font-size:28px; }
+      .catalogo { grid-template-columns:1fr; }
+      .registro-card,.form,.info { width:100%; max-width:360px; }
+      .carrito-panel { width:96vw; max-height:90vh; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Red_V.svg/1200px-Red_V.svg.png" alt="Logo" style="height: 40px;">
-    </div>
-    <nav>
-      <a href="#">Inicio</a>
-      <a href="#">Servicios</a>
-      <a href="#">Contacto</a>
-      <a href="#" class="contact-button">Contáctenos</a>
-    </nav>
-  </header>
 
-  <main>
-    <div class="text-content">
-      <h1>Industrias Black:<br>Innovación y Seguridad</h1>
-      <h2>Expertos en Ciberseguridad y Desarrollo Electrónico</h2>
-      <p>Impulsamos tu empresa con soluciones tecnológicas avanzadas y un enfoque en la protección de tus activos digitales.</p>
-      <div class="buttons">
-        <a href="#" class="info">Más Información</a>
-        <a href="#" class="contact">Contacto</a>
+  <!-- INTERRUPTOR CSS: controla registro vs portal -->
+  <input type="checkbox" id="gate">
+
+  <!-- ===== REGISTRO ===== -->
+  <div id="registro">
+    <div class="registro-card">
+      <div class="logo-registro-svg">IP</div>
+      <h2>Crear cuenta</h2>
+      <input type="text" id="usuario" placeholder="Usuario" autocomplete="username">
+      <input type="password" id="clave" placeholder="Contraseña" autocomplete="current-password">
+      <button id="btn-registrar" type="button">REGISTRAR</button>
+    </div>
+  </div>
+
+  <!-- ===== PORTAL ===== -->
+  <div id="portal">
+    <header>
+      <h2 class="brand">InnovaPrint</h2>
+      <nav>
+        <div class="nav-wrapper">
+          <button class="nav-toggle">Menú</button>
+          <div class="nav-dropdown">
+            <a href="#inicio">🏠 Inicio</a>
+            <a href="#servicios">⚙️ Servicios</a>
+            <a href="#catalogo">🛍️ Catálogo</a>
+            <a href="#nosotros">💡 Nosotros</a>
+            <a href="#contacto">📩 Contacto</a>
+          </div>
+        </div>
+        <button id="nav-carrito-btn" onclick="abrirCarrito()">
+          🛒 Carrito
+          <span class="carrito-badge" id="badge">0</span>
+        </button>
+        <button class="btn-salir" id="btn-salir">Salir</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="inicio">
+        <img src="https://i.postimg.cc/MHDRSFfn/Whats-App-Image-2026-04-02-at-11-26-31-PM.jpg" alt="InnovaPrint Logo" class="hero-logo">
+        <p class="hero-slogan">"Donde Tus Ideas Se Convierten En Estilo"</p>
+      </section>
+
+      <section class="moving-section">
+        <div class="moving-left">
+          <div class="moving-wrapper">
+            <div class="moving-text">
+              <span>Diseño de Logos</span><span>Ropa Personalizada</span>
+              <span>Impresión Publicitaria</span><span>Artículos Promocionales</span>
+              <span>Packaging Creativo</span><span>Diseño de Logos</span>
+              <span>Ropa Personalizada</span><span>Impresión Publicitaria</span>
+              <span>Artículos Promocionales</span><span>Packaging Creativo</span>
+            </div>
+          </div>
+        </div>
+        <div class="moving-right">
+          <h2>¿En qué podemos ayudarte?</h2>
+          <p>En <strong>InnovaPrint</strong> convertimos tus ideas en productos reales. Diseñamos, imprimimos y entregamos con <strong>calidad profesional</strong> para que tu marca destaque.</p>
+          <ul>
+            <li>✔ <strong>Diseños exclusivos</strong></li>
+            <li>✔ <strong>Materiales premium</strong></li>
+            <li>✔ <strong>Entrega rápida</strong></li>
+            <li>✔ <strong>Atención personalizada</strong></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="services" id="servicios">
+        <h2 class="section-title">Nuestros Servicios</h2>
+        <div class="cards">
+          <div class="card">
+            <div class="icon">👗</div>
+            <h3>Prendas Personalizadas</h3>
+            <p>Diseño, creación y personalización de prendas pensadas para <strong>expresar identidad</strong> y destacar con autenticidad.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🎨</div>
+            <h3>De la Idea a la Entrega</h3>
+            <p>Desde la idea hasta la entrega: diseñamos, confeccionamos y personalizamos <strong>moda hecha para ti</strong>.</p>
+          </div>
+          <div class="card">
+            <div class="icon">💡</div>
+            <h3>Conceptualización</h3>
+            <p>Conceptualizamos, diseñamos y producimos prendas únicas que <strong>transforman tu visión</strong> en realidad.</p>
+          </div>
+          <div class="card">
+            <div class="icon">⚡</div>
+            <h3>Innovación Total</h3>
+            <p>Innovación en diseño, precisión en producción y <strong>personalización total</strong> para un estilo sin límites.</p>
+          </div>
+          <div class="card">
+            <div class="icon">📖</div>
+            <h3>Tu Historia en Moda</h3>
+            <p>Creamos más que ropa: diseñamos, fabricamos y personalizamos <strong>piezas que cuentan tu historia</strong>.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="catalogo-section" id="catalogo">
+        <h1>Catálogo</h1>
+        <p>Productos personalizados con <strong>calidad profesional</strong>. Precios en pesos dominicanos.</p>
+        <div class="catalogo">
+
+          <div class="producto">
+            <span class="color-tip">🎨 Disponible en Blanco y Azul</span>
+            <img src="https://i.postimg.cc/JhCHV3f9/Whats-App-Image-2026-04-09-at-10-55-01-PM.jpg" alt="T-shirt">
+            <div class="nombre">T-shirt</div>
+            <div class="precio">RD$700</div>
+            <button class="btn" onclick="abrirModal('T-shirt','RD$700','https://i.postimg.cc/JhCHV3f9/Whats-App-Image-2026-04-09-at-10-55-01-PM.jpg',700)">Comprar</button>
+          </div>
+
+          <div class="producto">
+            <img src="https://i.postimg.cc/BZz6fcDk/Whats-App-Image-2026-04-09-at-10-45-28-PM.jpg" alt="Bolsa">
+            <div class="nombre">Bolsa</div>
+            <div class="precio">RD$300 – 500</div>
+            <button class="btn" onclick="abrirModal('Bolsa','RD$300–500','https://i.postimg.cc/BZz6fcDk/Whats-App-Image-2026-04-09-at-10-45-28-PM.jpg',400)">Comprar</button>
+          </div>
+
+          <div class="producto">
+            <img src="https://i.postimg.cc/QMMCr660/Whats-App-Image-2026-04-09-at-10-37-37-PM.jpg" alt="Taza">
+            <div class="nombre">Taza</div>
+            <div class="precio">RD$400 – 450</div>
+            <button class="btn" onclick="abrirModal('Taza','RD$400–450','https://i.postimg.cc/QMMCr660/Whats-App-Image-2026-04-09-at-10-37-37-PM.jpg',425)">Comprar</button>
+          </div>
+
+          <div class="producto">
+            <img src="https://i.postimg.cc/QMMCr660/Whats-App-Image-2026-04-09-at-10-37-37-PM.jpg" alt="Termo">
+            <div class="nombre">Termo</div>
+            <div class="precio">RD$600 – 900</div>
+            <button class="btn" onclick="abrirModal('Termo','RD$600–900','https://i.postimg.cc/QMMCr660/Whats-App-Image-2026-04-09-at-10-37-37-PM.jpg',750)">Comprar</button>
+          </div>
+
+          <div class="producto">
+            <img src="https://i.postimg.cc/5y5bzv7Y/Whats-App-Image-2026-04-09-at-10-37-50-PM.jpg" alt="Gorra">
+            <div class="nombre">Gorra</div>
+            <div class="precio">RD$450 – 700</div>
+            <button class="btn" onclick="abrirModal('Gorra','RD$450–700','https://i.postimg.cc/5y5bzv7Y/Whats-App-Image-2026-04-09-at-10-37-50-PM.jpg',575)">Comprar</button>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="page-hero" id="nosotros">
+        <h1>Sobre Nosotros</h1>
+        <p>Conoce quiénes somos y por qué <strong>InnovaPrint</strong> es tu mejor aliado creativo.</p>
+      </section>
+
+      <section class="about-content">
+        <div class="about-text">
+          <h2>Nuestra Historia</h2>
+          <p>InnovaPrint surgió en <strong>2026</strong>, con una simple idea de un grupo de jóvenes: <em>"Convertir las ideas de las personas en diseños únicos y espectaculares"</em>. Este grupo de jóvenes creativos, imaginativos e impresionantes, empezaron creando diseños básicos pero súper llamativos, para tazas y camisetas sin imaginar que marcarían recuerdos importantes en las memorias de algunas personas.</p>
+          <p>Con el tiempo, lo que era una simple idea se convirtió en algo <strong>transformador</strong>. Cada pedido que llegaba marcaba una historia diferente: Regalos, Sorpresa, Recuerdos, Cumpleaños… y así nos convertimos en una tienda de <strong>confiabilidad y satisfacción</strong>.</p>
+        </div>
+        <div class="about-box">
+          <h3>¿Por qué elegirnos?</h3>
+          <ul>
+            <li>✔ <strong>Diseños exclusivos</strong> y profesionales</li>
+            <li>✔ <strong>Materiales de alta calidad</strong></li>
+            <li>✔ <strong>Atención personalizada</strong></li>
+            <li>✔ <strong>Entrega rápida y segura</strong></li>
+            <li>✔ <strong>Compromiso</strong> con la satisfacción del cliente</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="mission">
+        <div class="card"><h3>Misión</h3><p>Brindar <strong>soluciones creativas y de alta calidad</strong> en productos personalizados, lograr una buena <strong>expansión nacional e internacional</strong> posicionándonos en el top de los mejores diseñadores gráficos y transformar las ideas de nuestros clientes en <strong>diseños únicos</strong> que reflejen su estilo, identidad y emoción.</p></div>
+        <div class="card"><h3>Visión</h3><p>Convertirnos en una <strong>empresa líder</strong> en servicios creativos y de impresión a nivel nacional.</p></div>
+        <div class="card"><h3>Valores</h3><p><strong>Calidad, Responsabilidad, Innovación, Gratitud, Creatividad</strong> y Compromiso por cada producto.</p></div>
+      </section>
+
+      <section class="contact" id="contacto">
+        <h1>Contáctanos</h1>
+        <p class="sub">¿Tienes una idea o proyecto? <strong>Escríbenos y lo hacemos realidad.</strong></p>
+        <div class="container">
+          <div class="info">
+            <h3>Información</h3>
+            <p>📞 <strong>+1 809 000 0000</strong></p>
+            <p>📧 innovaprint@gmail.com</p>
+            <p>📍 Santo Domingo, República Dominicana</p>
+            <p>🕒 Lun — Sáb | <strong>8:00 AM — 6:00 PM</strong></p>
+            <div class="social">
+              <span>Síguenos:</span>
+              <a href="https://www.instagram.com/innovaprint_rd?igsh=MTc0bTMxOGRzbnBobg%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer">Instagram</a>
+              <a href="#">Facebook</a>
+              <a href="#">WhatsApp</a>
+            </div>
+          </div>
+          <div class="form">
+            <h3>Envíanos un mensaje</h3>
+            <form action="https://formsubmit.co/marvinhernandez0828@gmail.com" method="POST">
+              <input type="text" name="nombre" placeholder="Nombre" required>
+              <input type="email" name="correo" placeholder="Correo electrónico" required>
+              <textarea name="mensaje" placeholder="Escribe tu mensaje" required></textarea>
+              <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_subject" value="Nuevo mensaje desde InnovaPrint">
+              <button type="submit">ENVIAR MENSAJE</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>© 2026 <strong>InnovaPrint</strong> — Todos los derechos reservados</footer>
+  </div>
+
+  <div class="overlay-fondo" id="overlay" onclick="cerrarTodo()"></div>
+
+  <div class="modal-confirmar" id="modal">
+    <div class="modal-card">
+      <div class="modal-img-wrap"><img id="m-img" src="" alt=""></div>
+      <div class="modal-body">
+        <h3 id="m-nombre"></h3>
+        <div class="m-precio" id="m-precio"></div>
+        <p>¿Quieres añadir este producto a tu carrito?</p>
+        <div class="modal-acciones">
+          <button class="btn-confirmar" onclick="agregarAlCarrito()">Añadir al carrito</button>
+          <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+        </div>
       </div>
     </div>
-    <div class="image-content">
-      <img src="https://images.unsplash.com/photo-1626177704762-1b9293c4ff49" alt="Futuristic City">
-    </div>
-  </main>
-
-  <footer>
-    <div class="social-icons">
-      <img src="https://cdn-icons-png.flaticon.com/512/145/145807.png" alt="LinkedIn">
-      <img src="https://cdn-icons-png.flaticon.com/512/145/145802.png" alt="Instagram">
-      <img src="https://cdn-icons-png.flaticon.com/512/145/145807.png" alt="YouTube">
-    </div>
-  </footer>
-
-  <div class="chatbot-container">
-    <iframe src="https://udify.app/chatbot/2tvG8AwPm5J0ADQ7" style="width: 100%; height: 100%;" frameborder="0" allow="microphone"></iframe>
   </div>
+
+  <div class="carrito-panel" id="carrito-panel">
+    <div class="carrito-head">
+      <div class="carrito-head-left">
+        <h2>Mi carrito</h2>
+        <span class="items-count" id="items-count">0</span>
+      </div>
+      <button class="btn-cerrar-carrito" onclick="cerrarCarrito()">✕</button>
+    </div>
+    <div class="carrito-lista" id="carrito-lista"></div>
+    <div class="carrito-pie">
+      <div class="total-row">
+        <span class="total-label">Total estimado</span>
+        <span class="total-num">RD$<span id="total-num">0</span></span>
+      </div>
+      <button class="btn-pedido" onclick="hacerPedido()">💬 Pedir por WhatsApp</button>
+      <button class="btn-vaciar" onclick="vaciarCarrito()">Vaciar carrito</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    var gate = document.getElementById("gate");
+
+    /* ===== REGISTRO: activa el checkbox para mostrar el portal ===== */
+    document.getElementById("btn-registrar").addEventListener("click", function() {
+      var u = document.getElementById("usuario").value.trim();
+      var c = document.getElementById("clave").value.trim();
+      if (!u || !c) { alert("Completa los campos"); return; }
+      gate.checked = true;
+      try { localStorage.setItem("ip_u", u); } catch(e) {}
+    });
+
+    /* ===== SALIR: desmarca el checkbox para volver al registro ===== */
+    document.getElementById("btn-salir").addEventListener("click", function() {
+      gate.checked = false;
+      try { localStorage.removeItem("ip_u"); } catch(e) {}
+    });
+
+    /* ===== Recordar sesión al cargar ===== */
+    (function() {
+      try { if (localStorage.getItem("ip_u")) gate.checked = true; } catch(e) {}
+    })();
+
+    /* ===== CARRITO ===== */
+    var carrito = [];
+    var productoActual = null;
+
+    function abrirModal(nombre, precio, img, num) {
+      productoActual = { nombre:nombre, precio:precio, img:img, num:num };
+      document.getElementById("m-img").src = img;
+      document.getElementById("m-nombre").textContent = nombre;
+      document.getElementById("m-precio").textContent = precio;
+      document.getElementById("modal").classList.add("activo");
+      document.getElementById("overlay").classList.add("activo");
+    }
+    function cerrarModal() {
+      document.getElementById("modal").classList.remove("activo");
+      document.getElementById("overlay").classList.remove("activo");
+      productoActual = null;
+    }
+    function agregarAlCarrito() {
+      if (!productoActual) return;
+      var existe = null;
+      for (var i=0; i<carrito.length; i++) {
+        if (carrito[i].nombre === productoActual.nombre) { existe = carrito[i]; break; }
+      }
+      if (existe) { existe.cantidad++; }
+      else { carrito.push({nombre:productoActual.nombre,precio:productoActual.precio,img:productoActual.img,num:productoActual.num,cantidad:1}); }
+      cerrarModal();
+      actualizarUI();
+      toast("✅ " + productoActual.nombre + " añadido");
+    }
+    function abrirCarrito() {
+      renderLista();
+      document.getElementById("carrito-panel").classList.add("abierto");
+      document.getElementById("overlay").classList.add("activo");
+    }
+    function cerrarCarrito() {
+      document.getElementById("carrito-panel").classList.remove("abierto");
+      document.getElementById("overlay").classList.remove("activo");
+    }
+    function cerrarTodo() { cerrarModal(); cerrarCarrito(); }
+    function cambiarCantidad(idx, delta) {
+      carrito[idx].cantidad += delta;
+      if (carrito[idx].cantidad <= 0) carrito.splice(idx,1);
+      actualizarUI(); renderLista();
+    }
+    function eliminar(idx) { carrito.splice(idx,1); actualizarUI(); renderLista(); }
+    function vaciarCarrito() { carrito=[]; actualizarUI(); renderLista(); toast("🗑 Carrito vaciado"); }
+    function renderLista() {
+      var lista = document.getElementById("carrito-lista");
+      if (carrito.length===0) {
+        lista.innerHTML='<div class="carrito-vacio"><div class="v-icon">🛍️</div><p>Tu carrito está vacío.<br>¡Elige un producto del catálogo!</p></div>';
+        return;
+      }
+      var html="";
+      for (var i=0; i<carrito.length; i++) {
+        var it=carrito[i];
+        html+='<div class="ci"><img src="'+it.img+'" alt="'+it.nombre+'"><div class="ci-data"><div class="ci-nom">'+it.nombre+'</div><div class="ci-sub">'+it.precio+' × '+it.cantidad+' = <span>RD$'+(it.num*it.cantidad)+'</span></div></div><div class="ci-controles"><button class="c-btn" onclick="cambiarCantidad('+i+',-1)">−</button><span class="c-cant">'+it.cantidad+'</span><button class="c-btn" onclick="cambiarCantidad('+i+',1)">+</button><button class="c-del" onclick="eliminar('+i+')">🗑</button></div></div>';
+      }
+      lista.innerHTML=html;
+    }
+    function actualizarUI() {
+      var total=0, totalItems=0;
+      for (var i=0; i<carrito.length; i++) { total+=carrito[i].num*carrito[i].cantidad; totalItems+=carrito[i].cantidad; }
+      document.getElementById("total-num").textContent=total;
+      document.getElementById("items-count").textContent=totalItems;
+      document.getElementById("badge").textContent=totalItems;
+      document.getElementById("nav-carrito-btn").style.display=totalItems>0?"flex":"none";
+      if (totalItems===0) cerrarCarrito();
+    }
+    function hacerPedido() {
+      var total=0, lista="";
+      for (var i=0; i<carrito.length; i++) {
+        total+=carrito[i].num*carrito[i].cantidad;
+        lista+="• "+carrito[i].nombre+" x"+carrito[i].cantidad+" (RD$"+(carrito[i].num*carrito[i].cantidad)+")\n";
+      }
+      var msg=encodeURIComponent("Hola InnovaPrint! 👋\nMe gustaría hacer este pedido:\n\n"+lista+"\n💰 Total: RD$"+total);
+      window.open("https://wa.me/18090000000?text="+msg,"_blank");
+    }
+    var toastTmr;
+    function toast(msg) {
+      var t=document.getElementById("toast");
+      t.textContent=msg; t.classList.add("visible");
+      clearTimeout(toastTmr);
+      toastTmr=setTimeout(function(){t.classList.remove("visible");},2600);
+    }
+  </script>
 </body>
 </html>
